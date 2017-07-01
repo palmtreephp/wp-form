@@ -1,0 +1,23 @@
+{
+  "name": "palmtree/wp-form",
+  "description": "WordPress Form component for Palmtree PHP",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Andy Palmer",
+      "email": "andy@andypalmer.me",
+      "homepage": "https://andypalmer.me"
+    }
+  ],
+  "require": {
+    "monolog/monolog": "^1.21",
+    "swiftmailer/swiftmailer": "^5.4",
+    "palmtree/collection": "^0.2.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "Palmtree\\WordPress\\Form\\": "src"
+    }
+  }
+}
