@@ -13,7 +13,9 @@
   "require": {
     "monolog/monolog": "^1.21",
     "swiftmailer/swiftmailer": "^5.4",
-    "palmtree/collection": "^0.2.2"
+    "palmtree/collection": "^0.3.0",
+    "palmtree/http": "^2.0.0",
+    "palmtree/form": "^0.8.8"
   },
   "autoload": {
     "psr-4": {
