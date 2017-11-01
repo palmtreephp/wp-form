@@ -40,7 +40,8 @@ class FormLogger
     {
         $message = new \Swift_Message();
 
-        $message->setFrom($this->args['from'])
+        $message
+            ->setFrom($this->args['from'])
             ->setTo($this->args['to'])
             ->setSubject($this->args['subject'])
             ->setContentType($this->args['content_type']);
@@ -58,7 +59,8 @@ class FormLogger
     {
         $transport = new \Swift_SmtpTransport($this->args['smtp']['hostname'], $this->args['smtp']['port']);
 
-        $transport->setUsername($this->args['smtp']['username'])
+        $transport
+            ->setUsername($this->args['smtp']['username'])
             ->setPassword($this->args['smtp']['password']);
 
         $mailer = new \Swift_Mailer($transport);

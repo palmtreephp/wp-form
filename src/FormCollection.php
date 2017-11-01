@@ -6,16 +6,22 @@ use Palmtree\Collection\Collection;
 
 class FormCollection extends Collection
 {
-    public function __construct($items = [])
+    public function __construct()
     {
-        parent::__construct($items, AbstractForm::class);
+        parent::__construct(AbstractForm::class);
+    }
+
+    /**
+     * @param int|string $key
+     * @return AbstractForm
+     */
+    public function get($key)
+    {
+        return parent::get($key);
     }
 
     public function render($key)
     {
-        /** @var AbstractForm $formController */
-        $formController = $this->get($key);
-
-        return $formController->getForm()->render();
+        return $this->get($key)->getForm()->render();
     }
 }
