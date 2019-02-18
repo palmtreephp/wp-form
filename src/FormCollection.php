@@ -2,9 +2,12 @@
 
 namespace Palmtree\WordPress\Form;
 
-use Palmtree\Collection\Collection;
+use Palmtree\Collection\Map;
 
-class FormCollection extends Collection
+/**
+ * @method AbstractForm get(string $key)
+ */
+class FormCollection extends Map
 {
     public function __construct()
     {
@@ -12,14 +15,10 @@ class FormCollection extends Collection
     }
 
     /**
-     * @param int|string $key
-     * @return AbstractForm
+     * @param string $key
+     *
+     * @return string
      */
-    public function get($key)
-    {
-        return parent::get($key);
-    }
-
     public function render($key)
     {
         return $this->get($key)->getForm()->render();
