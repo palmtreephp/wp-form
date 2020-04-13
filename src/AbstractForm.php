@@ -34,7 +34,7 @@ abstract class AbstractForm
         $isAjax = $form->isAjax() && Form::isAjaxRequest();
 
         if ($form->isValid()) {
-            $redirectField = $form->getField('redirect_to');
+            $redirectField = $form->get('redirect_to');
             $redirectTo    = ($redirectField) ? $redirectField->getData() : false;
 
             try {
