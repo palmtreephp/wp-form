@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Palmtree\WordPress\Form;
 
@@ -6,6 +6,7 @@ use Monolog\Formatter\HtmlFormatter;
 use Monolog\Handler\SwiftMailerHandler;
 use Monolog\Logger;
 use Palmtree\ArgParser\ArgParser;
+use Psr\Log\LoggerInterface;
 
 class FormLogger
 {
@@ -22,7 +23,9 @@ class FormLogger
         ],
     ];
 
+    /** @var array */
     protected $args = [];
+    /** @var LoggerInterface */
     protected $logger;
 
     public function __construct($args = [])
@@ -31,12 +34,12 @@ class FormLogger
         $this->logger = $this->createLogger();
     }
 
-    public function log($message)
+    public function log($message): void
     {
         $this->logger->alert($message);
     }
 
-    protected function createLogger()
+    protected function createLogger(): LoggerInterface
     {
         $message = new \Swift_Message();
 
@@ -55,7 +58,7 @@ class FormLogger
         return $logger;
     }
 
-    protected function getMailer()
+    protected function getMailer(): \Swift_Mailer
     {
         $transport = new \Swift_SmtpTransport($this->args['smtp']['hostname'], $this->args['smtp']['port']);
 
@@ -63,12 +66,10 @@ class FormLogger
             ->setUsername($this->args['smtp']['username'])
             ->setPassword($this->args['smtp']['password']);
 
-        $mailer = new \Swift_Mailer($transport);
-
-        return $mailer;
+        return new \Swift_Mailer($transport);
     }
 
-    protected function parseArgs($args)
+    protected function parseArgs($args): array
     {
         $parser = new ArgParser($args);
 

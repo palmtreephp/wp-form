@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Palmtree\WordPress\Form;
 
@@ -7,22 +7,28 @@ use Palmtree\Http\RemoteUser;
 
 abstract class AbstractForm
 {
-    /** @var Form $form */
+    /** @var Form|null */
     protected $form;
+    /** @var array */
     public $args = [];
+    /** @var array */
     protected $errors = [];
+    /** @var string */
     protected $successMessage = 'Thank you for your message.';
+    /** @var string */
     protected $errorMessage = 'Oops! Something went wrong there, please check the form for errors.';
+    /** @var string */
     protected $abortMessage = 'Oops! An unknown error occurred. Please try again later.';
+    /** @var FormLogger|null */
     protected $logger;
 
-    public function __construct(FormLogger $logger = null)
+    public function __construct(?FormLogger $logger = null)
     {
         $this->logger = $logger;
         add_action('wp_loaded', [$this, 'parseRequest']);
     }
 
-    public function parseRequest()
+    public function parseRequest(): void
     {
         $form = $this->getForm();
         $form->handleRequest();
@@ -35,7 +41,7 @@ abstract class AbstractForm
 
         if ($form->isValid()) {
             $redirectField = $form->get('redirect_to');
-            $redirectTo    = ($redirectField) ? $redirectField->getData() : false;
+            $redirectTo = ($redirectField) ? $redirectField->getData() : false;
 
             try {
                 $this->onSuccess();
@@ -64,27 +70,29 @@ abstract class AbstractForm
         }
     }
 
-    abstract protected function createForm();
+    abstract protected function createForm(): Form;
 
     protected function onSuccess()
     {
         $this->logger->log($this->getLogBody());
     }
 
-    protected function getLogBody()
+    protected function getLogBody(): string
     {
         $message = '';
 
         $message .= "----- START OF MESSAGE -----\n\n";
 
-        foreach ($this->form->getFields(['userInput' => true]) as $field) {
-            $message .= $field->getLabel() . ': ';
+        foreach ($this->form->all() as $field) {
+            if ($field->isUserInput()) {
+                $message .= $field->getLabel() . ': ';
 
-            if ($field->getTag() === 'textarea') {
-                $message .= "\n";
+                if ($field->getTag() === 'textarea') {
+                    $message .= "\n";
+                }
+
+                $message .= $field->getData() . "\n\n";
             }
-
-            $message .= $field->getData() . "\n\n";
         }
 
         $message .= "----- END OF MESSAGE -----\n\n";
@@ -99,35 +107,23 @@ abstract class AbstractForm
 
     protected function onFailure()
     {
-
     }
 
-    /**
-     * @param mixed $successMessage
-     *
-     * @return AbstractForm
-     */
-    public function setSuccessMessage($successMessage)
+    public function setSuccessMessage(string $successMessage): self
     {
         $this->successMessage = $successMessage;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getSuccessMessage()
+    public function getSuccessMessage(): string
     {
         return $this->successMessage;
     }
 
-    /**
-     * @return Form
-     */
-    public function getForm()
+    public function getForm(): Form
     {
-        if ($this->form === null) {
+        if (!isset($this->form)) {
             $this->form = $this->createForm();
         }
 

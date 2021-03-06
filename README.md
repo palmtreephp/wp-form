@@ -3,7 +3,7 @@
 WordPress form component for Palmtree PHP. Used as a bridge between WordPress and the [Palmtree form](https://github.com/palmtreephp/form) component
 
 ## Requirements
-* PHP >= 5.6
+* PHP >= 7.1
 
 ## Installation
 
