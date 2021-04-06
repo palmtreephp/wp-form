@@ -16,7 +16,7 @@
         "swiftmailer/swiftmailer": "^5.4",
         "palmtree/collection": "^3.0|^4.0",
         "palmtree/http": "^2.0",
-        "palmtree/form": "dev-dev as 3.0.4"
+        "palmtree/form": "^4.1"
     },
     "autoload": {
         "psr-4": {
