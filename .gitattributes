@@ -3,3 +3,4 @@
 /.gitignore        export-ignore
 /.php_cs.dist      export-ignore
 /psalm.xml         export-ignore
+/composer.lock     export-ignore

@@ -11,12 +11,10 @@
         }
     ],
     "require": {
-        "php": ">=7.1",
+        "php": ">=7.4",
         "monolog/monolog": "^2.0",
-        "swiftmailer/swiftmailer": "^5.4",
-        "palmtree/collection": "^3.0|^4.0",
-        "palmtree/http": "^2.0",
-        "palmtree/form": "^4.1"
+        "palmtree/form": "^4.1",
+        "symfony/mailer": "^4.0||^5.0||^6.0"
     },
     "autoload": {
         "psr-4": {
@@ -24,6 +22,6 @@
         }
     },
     "require-dev": {
-        "palmtree/php-cs-fixer-config": "^1.0"
+        "palmtree/php-cs-fixer-config": "^2.0"
     }
 }

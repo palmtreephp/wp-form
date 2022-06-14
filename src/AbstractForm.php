@@ -1,32 +1,27 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Palmtree\WordPress\Form;
 
 use Palmtree\Form\Form;
-use Palmtree\Http\RemoteUser;
 
 abstract class AbstractForm
 {
-    /** @var Form|null */
-    protected $form;
-    /** @var array */
-    public $args = [];
-    /** @var array */
-    protected $errors = [];
-    /** @var string */
-    protected $successMessage = 'Thank you for your message.';
-    /** @var string */
-    protected $errorMessage = 'Oops! Something went wrong there, please check the form for errors.';
-    /** @var string */
-    protected $abortMessage = 'Oops! An unknown error occurred. Please try again later.';
-    /** @var FormLogger|null */
-    protected $logger;
+    protected ?Form $form;
+    protected ?FormLogger $logger;
+    protected array $errors = [];
+    protected string $successMessage = 'Thank you for your message.';
+    protected string $errorMessage = 'Oops! Something went wrong there, please check the form for errors.';
+    protected string $abortMessage = 'Oops! An unknown error occurred. Please try again later.';
 
     public function __construct(?FormLogger $logger = null)
     {
         $this->logger = $logger;
         add_action('wp_loaded', [$this, 'parseRequest']);
     }
+
+    abstract protected function createForm(): Form;
 
     public function parseRequest(): void
     {
@@ -40,8 +35,7 @@ abstract class AbstractForm
         $isAjax = $form->isAjax() && Form::isAjaxRequest();
 
         if ($form->isValid()) {
-            $redirectField = $form->get('redirect_to');
-            $redirectTo = ($redirectField) ? $redirectField->getData() : false;
+            $redirectTo = $form->has('redirect_to') ? $form->get('redirect_to') : false;
 
             try {
                 $this->onSuccess();
@@ -70,8 +64,6 @@ abstract class AbstractForm
         }
     }
 
-    abstract protected function createForm(): Form;
-
     protected function onSuccess()
     {
         $this->logger->log($this->getLogBody());
@@ -79,9 +71,7 @@ abstract class AbstractForm
 
     protected function getLogBody(): string
     {
-        $message = '';
-
-        $message .= "----- START OF MESSAGE -----\n\n";
+        $message = "----- START OF MESSAGE -----\n\n";
 
         foreach ($this->form->all() as $field) {
             if ($field->isUserInput()) {
@@ -97,10 +87,8 @@ abstract class AbstractForm
 
         $message .= "----- END OF MESSAGE -----\n\n";
 
-        $user = new RemoteUser();
-
-        $message .= 'IP Address: ' . $user->getIpAddress() . "\n";
-        $message .= 'User Agent: ' . $user->getUserAgent() . "\n";
+        $message .= 'IP Address: ' . ($_SERVER['REMOTE_ADDR'] ?? '') . "\n";
+        $message .= 'User Agent: ' . ($_SERVER['HTTP_USER_AGENT'] ?? '') . "\n";
 
         return $message;
     }

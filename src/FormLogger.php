@@ -1,36 +1,39 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Palmtree\WordPress\Form;
 
 use Monolog\Formatter\HtmlFormatter;
-use Monolog\Handler\SwiftMailerHandler;
+use Monolog\Handler\SymfonyMailerHandler;
 use Monolog\Logger;
 use Palmtree\ArgParser\ArgParser;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
+use Symfony\Component\Mime\Email;
 
 class FormLogger
 {
-    public static $defaultArgs = [
-        'from'         => '',
-        'to'           => '',
-        'subject'      => 'New Form Submission',
-        'content_type' => 'text/html',
-        'smtp'         => [
+    public static array $defaultArgs = [
+        'from' => '',
+        'to' => '',
+        'subject' => 'New Form Submission',
+        'smtp' => [
             'hostname' => 'localhost',
-            'port'     => 25,
+            'port' => 25,
             'username' => '',
             'password' => '',
         ],
     ];
 
-    /** @var array */
-    protected $args = [];
-    /** @var LoggerInterface */
-    protected $logger;
+    protected array $args = [];
+    protected LoggerInterface $logger;
 
     public function __construct($args = [])
     {
-        $this->args   = $this->parseArgs($args);
+        $this->args = $this->parseArgs($args);
         $this->logger = $this->createLogger();
     }
 
@@ -41,15 +44,15 @@ class FormLogger
 
     protected function createLogger(): LoggerInterface
     {
-        $message = new \Swift_Message();
+        $message = new Email();
 
         $message
-            ->setFrom($this->args['from'])
-            ->setTo($this->args['to'])
-            ->setSubject($this->args['subject'])
-            ->setContentType($this->args['content_type']);
+            ->to($this->args['to'])
+            ->from($this->args['from'])
+            ->subject($this->args['subject'])
+        ;
 
-        $handler = new SwiftMailerHandler($this->getMailer(), $message, Logger::INFO);
+        $handler = new SymfonyMailerHandler($this->getMailer(), $message, Logger::INFO);
         $handler->setFormatter(new HtmlFormatter());
 
         $logger = new Logger('contact');
@@ -58,15 +61,15 @@ class FormLogger
         return $logger;
     }
 
-    protected function getMailer(): \Swift_Mailer
+    protected function getMailer(): MailerInterface
     {
-        $transport = new \Swift_SmtpTransport($this->args['smtp']['hostname'], $this->args['smtp']['port']);
-
+        $transport = new EsmtpTransport($this->args['smtp']['hostname'], $this->args['smtp']['port']);
         $transport
             ->setUsername($this->args['smtp']['username'])
-            ->setPassword($this->args['smtp']['password']);
+            ->setPassword($this->args['smtp']['password'])
+        ;
 
-        return new \Swift_Mailer($transport);
+        return new Mailer($transport);
     }
 
     protected function parseArgs($args): array
