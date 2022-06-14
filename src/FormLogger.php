@@ -63,7 +63,7 @@ class FormLogger
 
     protected function getMailer(): MailerInterface
     {
-        $transport = new EsmtpTransport($this->args['smtp']['hostname'], $this->args['smtp']['port']);
+        $transport = new EsmtpTransport($this->args['smtp']['hostname'], (int)$this->args['smtp']['port']);
         $transport
             ->setUsername($this->args['smtp']['username'])
             ->setPassword($this->args['smtp']['password'])
